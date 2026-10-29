@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rizzzy’s Puppy Delivery 🐶💌</title>
+<style>
+:root{--bg1:#ffe3ef;--bg2:#ffd0e4;--ink:#5b2a45;--card:#fffaf6;--pink:#ff6fae;--glow:#ff9cc9;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#3a1a2e;--bg2:#2a1226;--ink:#ffe3ef;--card:#4a2640}}
+:root[data-theme="dark"]{--bg1:#3a1a2e;--bg2:#2a1226;--ink:#ffe3ef;--card:#4a2640}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;overflow:hidden}
+body{background:linear-gradient(160deg,var(--bg1),var(--bg2));color:var(--ink);font-family:"Quicksand","Trebuchet MS",system-ui,sans-serif;touch-action:manipulation;user-select:none}
+.hidden{display:none!important}
+button{font:inherit;cursor:pointer;border:0}
+.btn{background:linear-gradient(135deg,#ff6fae,#ff8fb8);color:#fff;font-weight:700;font-size:1.05rem;padding:14px 26px;border-radius:999px;box-shadow:0 6px 18px rgba(255,90,160,.45);animation:pulse 1.6s ease-in-out infinite}
+.btn.alt{background:linear-gradient(135deg,#b58cff,#ff8fb8);animation:none}
+.btn:active{transform:scale(.95)}
+@keyframes pulse{50%{transform:scale(1.07);box-shadow:0 8px 26px rgba(255,90,160,.7)}}
+/* gate */
+#gate{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;z-index:50;background:linear-gradient(160deg,var(--bg1),var(--bg2))}
+.gbox{background:var(--card);border-radius:28px;padding:30px 24px;width:min(92vw,360px);text-align:center;box-shadow:0 12px 40px rgba(255,90,160,.3)}
+.gbox h1{font-size:1.5rem;margin:0 0 6px}
+.gbox p{margin:0 0 16px;opacity:.8}
+.gbox input{width:100%;padding:14px;border-radius:16px;border:2px solid var(--glow);font-size:1.1rem;text-align:center;margin-bottom:14px;background:#fff;color:#5b2a45;outline:none}
+.shake{animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+#err{min-height:1.2em;font-size:.9rem;margin-top:10px;color:#d6336c}
+/* stage */
+#stage{position:fixed;inset:0;overflow:hidden}
+#say{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 9%);transform:translateX(-50%) scale(.6);width:min(88vw,380px);background:var(--card);padding:14px 18px;border-radius:22px;text-align:center;font-weight:700;box-shadow:0 8px 26px rgba(255,90,160,.35);opacity:0;transition:.35s;z-index:20;pointer-events:none}
+#say.show{opacity:1;transform:translateX(-50%) scale(1)}
+#hud{position:fixed;top:calc(env(safe-area-inset-top,0px) + 2%);left:0;right:0;text-align:center;font-size:1.5rem;letter-spacing:6px;z-index:15}
+#hud span{filter:grayscale(1);opacity:.35;transition:.3s;display:inline-block}
+#hud span.on{filter:none;opacity:1;transform:scale(1.25)}
+.mh{position:fixed;width:58px;height:58px;font-size:40px;line-height:58px;text-align:center;background:none;z-index:12;animation:bob 2s ease-in-out infinite;filter:drop-shadow(0 0 10px #ff6fae) drop-shadow(0 0 18px #ffd1e6)}
+.mh.got{animation:pop .5s forwards;pointer-events:none}
+@keyframes bob{50%{transform:translateY(-14px) scale(1.08)}}
+@keyframes pop{to{transform:scale(2.4);opacity:0}}
+.fh{position:fixed;z-index:30;pointer-events:none;animation:rise 2.4s ease-out forwards}
+@keyframes rise{to{transform:translate(var(--dx,0),-220px) scale(1.3);opacity:0}}
+.cf{position:fixed;top:-20px;width:10px;height:14px;z-index:40;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translate(var(--dx),110vh) rotate(720deg)}}
+/* puppy */
+#pup{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);left:0;width:170px;z-index:35;opacity:0;transform:translateX(-300px)}
+#pup.in{opacity:1}
+#pup svg{width:100%;display:block;overflow:visible}
+.hop{transform-origin:50% 100%}
+#pup.pop .hop{animation:popin .7s cubic-bezier(.3,1.6,.5,1)}
+@keyframes popin{from{transform:scale(0)}}
+#pup.jump .hop{animation:jump .55s ease-out var(--n,1)}
+@keyframes jump{40%{transform:translateY(-52px) rotate(-5deg)}}
+.tail{transform-origin:60px 100px;animation:wag .35s ease-in-out infinite alternate}
+@keyframes wag{from{transform:rotate(-18deg)}to{transform:rotate(24deg)}}
+.leg{fill:#ecc994}
+#pup.run .hop{animation:gallop .22s ease-in-out infinite}
+@keyframes gallop{50%{transform:translateY(-10px) rotate(-3deg)}}
+#pup.run .l1,#pup.run .l4{animation:step .22s ease-in-out infinite alternate}
+#pup.run .l2,#pup.run .l3{animation:step .22s ease-in-out infinite alternate-reverse}
+@keyframes step{from{transform:translateY(-6px)}to{transform:translateY(2px)}}
+#pup.sit .pbody{transform:rotate(-12deg);transform-origin:80px 140px}
+#pup.sit .l1,#pup.sit .l2{display:none}
+.envm{display:none}
+#pup.carry .envm{display:block}
+.eye{animation:blink 4s infinite;transform-origin:center;transform-box:fill-box}
+@keyframes blink{96%,100%{transform:scaleY(.1)}}
+/* delivery */
+#card{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 12%);transform:translateX(-50%);width:min(90vw,380px);background:var(--card);border-radius:26px;padding:24px 20px;text-align:center;z-index:25;animation:glow 2s ease-in-out infinite alternate,slide .8s both}
+@keyframes glow{from{box-shadow:0 0 14px #ff9cc9}to{box-shadow:0 0 40px #ff4f98}}
+@keyframes slide{from{opacity:0;transform:translate(-50%,30px)}}
+#card h2{margin:0 0 8px;font-size:1.35rem;text-shadow:0 0 12px var(--glow)}
+#card p{margin:0 0 18px;line-height:1.5}
+#dropenv{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);left:calc(50% + 70px);font-size:46px;z-index:36;background:none;animation:drop .8s cubic-bezier(.3,1.4,.5,1),bob 2s 1s ease-in-out infinite;filter:drop-shadow(0 0 10px #ff6fae)}
+@keyframes drop{from{transform:translateY(-120px) rotate(-30deg);opacity:0}}
+/* letter */
+#letter{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;padding:calc(env(safe-area-inset-top,0px) + 14px) 14px 170px;background:rgba(255,200,225,.82);backdrop-filter:blur(6px);animation:fade .6s}
+@keyframes fade{from{opacity:0}}
+#paper{width:min(94vw,440px);flex:1;min-height:0;overflow-y:auto;background:#fffaf3;color:#5b2a45;border-radius:20px;padding:24px 22px;box-shadow:0 14px 40px rgba(180,50,110,.35);border:2px solid #ffc2dc;animation:rise2 1.1s cubic-bezier(.2,1.1,.4,1)}
+@keyframes rise2{from{transform:translateY(60%) scale(.6);opacity:0}}
+#paper p{margin:0 0 12px;line-height:1.55;font-size:1.02rem;opacity:0;animation:fup .8s forwards;animation-delay:var(--d)}
+@keyframes fup{from{opacity:0;transform:translateY(10px)}to{opacity:1}}
+#acts{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:14px;opacity:0;animation:fup .8s forwards}
+#acts .btn{font-size:.95rem;padding:12px 18px}
+.sp{position:fixed;z-index:45;pointer-events:none;animation:spk 1.4s ease-out forwards}
+@keyframes spk{from{transform:scale(0) rotate(0)}40%{transform:scale(1.4) rotate(90deg)}to{transform:scale(0) rotate(200deg);opacity:0}}
+#toast{position:fixed;left:50%;bottom:190px;transform:translateX(-50%);background:var(--card);padding:10px 18px;border-radius:999px;z-index:60;font-weight:700;box-shadow:0 6px 20px rgba(255,90,160,.4);opacity:0;transition:.4s;pointer-events:none;white-space:nowrap}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="gbox" id="gbox">
+    <h1>🔐 Secret Name Gate</h1>
+    <p>Only one special person can enter. Who are you?</p>
+    <input id="nm" placeholder="Type the secret name…" autocomplete="off" autocapitalize="words" enterkeyhint="go">
+    <button class="btn" id="go">Unlock 💗</button>
+    <div id="err"></div>
+  </div>
+</div>
+
+<div id="stage" class="hidden">
+  <div id="hud"><span>💗</span><span>💗</span><span>💗</span><span>💗</span><span>💗</span></div>
+  <div id="say"></div>
+
+  <div id="card" class="hidden">
+    <h2>🐾 Special Delivery for Bachaa! 💌</h2>
+    <p>Your puppy has brought you a little message from Rizzzy. Open it to see what’s inside!</p>
+    <button class="btn" id="openBtn">Open Your Letter 💗</button>
+  </div>
+  <button id="dropenv" class="hidden" aria-label="Open the envelope">💌</button>
+
+  <div id="pup">
+    <div class="hop">
+    <svg viewBox="0 0 200 160" aria-label="Rizzzy’s puppy">
+      <path class="tail" d="M62 100 Q34 76 42 50" stroke="#e9c28f" stroke-width="13" stroke-linecap="round" fill="none"/>
+      <g class="pbody">
+        <rect class="leg l1" x="62" y="118" width="15" height="32" rx="7"/>
+        <rect class="leg l2" x="80" y="120" width="15" height="30" rx="7"/>
+        <ellipse cx="98" cy="106" rx="47" ry="30" fill="#f6dcb0"/>
+        <rect class="leg l3" x="108" y="120" width="15" height="30" rx="7"/>
+        <rect class="leg l4" x="126" y="118" width="15" height="32" rx="7"/>
+      </g>
+      <g transform="translate(140 70)">
+        <ellipse cx="-25" cy="-16" rx="12" ry="21" fill="#c98f5a" transform="rotate(22 -25 -16)"/>
+        <ellipse cx="25" cy="-16" rx="12" ry="21" fill="#c98f5a" transform="rotate(-22 25 -16)"/>
+        <circle r="33" fill="#fbe6c2"/>
+        <circle class="eye" cx="-12" cy="-4" r="4.5" fill="#3b2a2a"/><circle class="eye" cx="12" cy="-4" r="4.5" fill="#3b2a2a"/>
+        <circle cx="-10.5" cy="-5.5" r="1.4" fill="#fff"/><circle cx="13.5" cy="-5.5" r="1.4" fill="#fff"/>
+        <circle cx="-21" cy="8" r="5" fill="#ffb3d1" opacity=".7"/><circle cx="21" cy="8" r="5" fill="#ffb3d1" opacity=".7"/>
+        <ellipse cx="0" cy="7" rx="6" ry="4.2" fill="#3b2a2a"/>
+        <path d="M-9 13 Q0 23 9 13" stroke="#3b2a2a" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <ellipse cx="0" cy="19" rx="4" ry="4.5" fill="#ff7a9c"/>
+      </g>
+      <path d="M118 96 Q140 114 162 96" stroke="#ff7eb6" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <path d="M140 134 C126 124 130 111 140 118 C150 111 154 124 140 134Z" fill="#ff4f98" stroke="#fff" stroke-width="1.5"/>
+      <text x="140" y="124" font-size="5.2" text-anchor="middle" fill="#fff" font-weight="700">Rizzzy 🐾</text>
+      <g class="envm" transform="translate(165 90) rotate(-12)">
+        <rect x="-15" y="-10" width="30" height="20" rx="2" fill="#ffc2dc" stroke="#ff6fae" stroke-width="1.5"/>
+        <path d="M-15 -10 L0 3 L15 -10" fill="none" stroke="#ff6fae" stroke-width="1.5"/>
+        <text y="8" font-size="7" text-anchor="middle">💗</text>
+      </g>
+    </svg>
+    </div>
+  </div>
+
+  <div id="letter" class="hidden">
+    <div id="paper"></div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+const SECRET=["bachaa"]; // change or add the secret name(s) here
+const $=s=>document.querySelector(s), sleep=ms=>new Promise(r=>setTimeout(r,ms));
+let gate=false, mission=false, got=0, opened=false, loop;
+const pup=$('#pup'), say=$('#say'), W=170;
+const cx=()=>(innerWidth-W)/2;
+const setX=(x,ms=0)=>{pup.style.transition=ms?`transform ${ms}ms ease-in-out`:'none';pup.style.transform=`translateX(${x}px)`};
+const speak=t=>{say.textContent=t;say.classList.add('show')}, hush=()=>say.classList.remove('show');
+const jump=n=>{pup.classList.remove('jump');void pup.offsetWidth;pup.style.setProperty('--n',n);pup.classList.add('jump')};
+const R=(a,b)=>a+Math.random()*(b-a);
+function floaty(x,y,e){const d=document.createElement('div');d.className='fh';d.textContent=e||'💗';d.style.cssText=`left:${x}px;top:${y}px;font-size:${R(16,34)}px;--dx:${R(-50,50)}px`;document.body.append(d);setTimeout(()=>d.remove(),2500)}
+function burst(n,x,y,e){for(let i=0;i<n;i++)setTimeout(()=>floaty(x+R(-60,60),y+R(-30,30),e||['💗','💖','💕','✨'][i%4]),i*70)}
+function confetti(n){const c=['#ff6fae','#ffd166','#7ae0c3','#b58cff','#6ec1ff'];for(let i=0;i<n;i++){const d=document.createElement('div');d.className='cf';d.style.cssText=`left:${R(0,100)}vw;background:${c[i%5]};--dx:${R(-80,80)}px;animation-duration:${R(2,3.6)}s;animation-delay:${R(0,.6)}s`;document.body.append(d);setTimeout(()=>d.remove(),4500)}}
+function sparkles(n){for(let i=0;i<n;i++){const d=document.createElement('div');d.className='sp';d.textContent='✨';d.style.cssText=`left:${R(5,90)}vw;top:${R(8,70)}vh;font-size:${R(14,30)}px;animation-delay:${R(0,.9)}s`;document.body.append(d);setTimeout(()=>d.remove(),2600)}}
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2200)}
+
+/* gate */
+function tryGate(){
+  const v=$('#nm').value.trim().toLowerCase();
+  if(SECRET.includes(v)){gate=true;$('#gate').classList.add('hidden');$('#stage').classList.remove('hidden');intro()}
+  else{$('#err').textContent='Hmm, that’s not the secret name. Try again 🐾';const b=$('#gbox');b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake')}
+}
+$('#go').onclick=tryGate;$('#nm').addEventListener('keydown',e=>{if(e.key==='Enter')tryGate()});
+
+/* sequence */
+async function intro(){
+  setX(cx());pup.classList.add('in','pop');jump(2);
+  await sleep(900);
+  speak('Woof woof! 🐶 Hi Bachaa! Rizzzy has something special for you!');
+  await sleep(4200);
+  speak('Tap all 5 magical hearts to help me! 💗');
+  await sleep(1800);hush();startGame();
+}
+function startGame(){
+  got=0;mission=false;document.querySelectorAll('#hud span').forEach(s=>s.classList.remove('on'));
+  $('#hud').classList.remove('hidden');
+  for(let i=0;i<5;i++){
+    const h=document.createElement('button');h.className='mh';h.textContent='💗';h.setAttribute('aria-label','Magical heart');
+    h.style.left=R(8,innerWidth-70)+'px';h.style.top=R(innerHeight*.22,innerHeight*.58)+'px';h.style.animationDelay=(i*.3)+'s';
+    h.addEventListener('pointerdown',()=>collect(h));document.body.append(h);
+  }
+}
+async function collect(h){
+  if(h.classList.contains('got'))return;h.classList.add('got');
+  const r=h.getBoundingClientRect();burst(4,r.left+29,r.top,'✨');
+  document.querySelectorAll('#hud span')[got].classList.add('on');got++;
+  setX(Math.max(0,Math.min(innerWidth-W,r.left-W/2+29)),450);jump(1);
+  setTimeout(()=>h.remove(),600);
+  if(got===5){mission=true;await sleep(700);celebrate()}
+}
+async function celebrate(){
+  speak('Yay!! You got all five hearts! 🎉');setX(cx(),500);await sleep(500);
+  jump(4);confetti(70);burst(14,innerWidth/2,innerHeight*.7);
+  await sleep(2800);hush();deliver();
+}
+async function deliver(){
+  $('#hud').classList.add('hidden');
+  setX(-220);void pup.offsetWidth;
+  pup.classList.add('carry','run');setX(cx(),2800);await sleep(2900);
+  pup.classList.remove('run');pup.classList.add('sit');await sleep(500);
+  pup.classList.remove('carry');$('#dropenv').classList.remove('hidden');
+  await sleep(900);$('#card').classList.remove('hidden');
+}
+$('#openBtn').onclick=openLetter;$('#dropenv').onclick=openLetter;
+
+const LINES=["Hey Bachaa! 🥹💗","Surprise! Your little puppy has delivered something from Rizzzy.","I just wanted to say that I’m genuinely sorry if I bothered you or upset you. I never wanted to make you feel uncomfortable.","I love having you around, and the time we spend together means a lot to me. Your presence makes even the simplest moments feel special.","I made this little surprise to bring a smile to your face. You don’t have to forgive me immediately; I just hope you know that I truly value you and respect your feelings.","I’m sorry, Bachaa. Sending you the biggest puppy hug ever! 🐶🤗❤️","— Yours, Rizzzy 💌"];
+async function openLetter(){
+  if(!gate||!mission||opened)return; // letter only opens after gate + mission
+  opened=true;
+  $('#card').classList.add('hidden');$('#dropenv').classList.add('hidden');
+  const L=$('#letter'),P=$('#paper');
+  P.innerHTML=LINES.map((t,i)=>`<p style="--d:${1+i*1.1}s">${t}</p>`).join('')+`<div id="acts" style="animation-delay:${1+LINES.length*1.1}s"><button class="btn" id="hug">Send a Virtual Hug 🤗</button><button class="btn alt" id="again">Play With the Puppy Again 🐾</button></div>`;
+  L.classList.remove('hidden');sparkles(22);burst(12,innerWidth/2,innerHeight*.6);
+  loop=setInterval(()=>floaty(R(0,innerWidth),innerHeight-40,['💗','💕','💖'][Math.floor(R(0,3))]),500);
+  $('#hug').onclick=()=>{jump(2);burst(18,innerWidth/2,innerHeight*.6);toast('Hug delivered! 🤗💗')};
+  $('#again').onclick=replay;
+  setTimeout(()=>{P.scrollTo({top:P.scrollHeight,behavior:'smooth'})},1000+LINES.length*1100);
+}
+function replay(){
+  clearInterval(loop);opened=false;mission=false;
+  $('#letter').classList.add('hidden');pup.classList.remove('sit','carry');
+  setX(cx(),400);jump(2);speak('Round two! Catch the hearts again! 🐾');
+  setTimeout(()=>{hush();startGame()},1800);
+}
+</script>
+</body>
+</html>
